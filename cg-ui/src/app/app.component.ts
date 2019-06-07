@@ -1,13 +1,14 @@
-import { Component } from '@angular/core';
-import * as d3 from 'd3';
+import {AfterContentInit, Component} from '@angular/core';
+
+import {GRAPHDATA} from './model/mock-data';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements AfterContentInit {
+export class AppComponent {
   title = 'cg-ui';
-  ngAfterContentInit() {
-    d3.select('p').style('color', 'green');
+  getGraphData() {
+    return GRAPHDATA;
   }
 }
