@@ -18,15 +18,16 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
   graphData: CgData;
   g;
   svg;
-  private minXDist = 500;
-  private minYDist = 50;
-  private nodeRad = 20;
+  private minXDist = 400;
+  private minYDist = 100;
+  private nodeRad = 40;
   private sNode: CgNodeItem;
   private eNode: CgNodeItem;
   private sNodeX: number;
   private sNodeY: number;
   private maxXDist: number;
-
+  private tooltipDiv;
+  private ttSpan;
   private nodeArr: CgNodeItem[] = [];
   private edgeArr: CgLineItem[] = [];
   constructor() { }
@@ -48,8 +49,15 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
       height = 500;
     }
     this.svg = svg;
+
     this.g = svg.append('g');
     const g = this.g;
+    this.tooltipDiv = d3.select('body').append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0);
+
+    this.ttSpan = this.tooltipDiv.append('div').attr('class', 'text-span');
+
     const eleMap = { };
     this.sNodeY = height / 2;
     this.sNodeX = this.nodeRad + 20;
@@ -62,21 +70,19 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     // arrows
     svg.append('svg:defs').append('svg:marker')
       .attr('id', 'arrow').attr('viewBox', '0 0 10 10')
-      .attr('refX', 43).attr('refY', 5)
+      .attr('refX', 0).attr('refY', 5)
       .attr('markerUnits', 'strokeWidth')
       .attr('markerWidth', 10)
       .attr('markerHeight', 6)
       .attr('orient', 'auto')
       .append('svg:path')
       .attr('d', 'M 0 0 L 10 5 L 0 10 z');
-    svg.append('rect')
-      .attr('fill', 'none')
-      .attr('pointer-events', 'all')
-      .attr('width', width)
-      .attr('height', height).style('color', 'red').style('border-width', '7px')
-      .call(d3.zoom()
-        .scaleExtent([1, 8])
-        .on('zoom', function() { g.attr('transform', d3.event.transform); }));
+
+    const zoom = d3.zoom()
+      .scaleExtent([1, 10])
+      .on('zoom', function() { g.attr('transform', d3.event.transform); });
+
+    svg.call(zoom);
   }
 
   saveToMap(key, valKey, elDt, eleMap) {
@@ -113,29 +119,57 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
 
   drawCircles(items: CgNodeItem[]) {
     // Define the div for the tooltip
-    const div = d3.select('body').append('div')
-      .attr('class', 'tooltip')
-      .style('opacity', 0);
+    const curScope = this;
     const circle = this.g.selectAll('circle')
       .data(items);
     const circleEnter = circle.enter().append('circle');
     circleEnter.attr('cy', function(d) { return d.cy; });
     circleEnter.attr('cx', function(d) { return d.cx; });
     circleEnter.attr('r', this.nodeRad);
-    circleEnter.attr('fill', 'grey');
+    circleEnter.attr('fill', 'orange');
+    circleEnter.on('mouseover', function(d) {
+      curScope.ttOnMouseOver(d, curScope);
+      d3.select(this).transition()
+        .duration(300).style('fill', 'steelblue');
+    })
+      .on('mouseout', function(d) {
+       curScope.ttOnMouseOut(d, curScope);
+        d3.select(this).transition()
+          .duration(300).style('fill', 'orange');
+      });
+
+  }
+  ttOnMouseOver(d, curScope) {
+    curScope.tooltipDiv.transition()
+      .duration(200)
+      .style('opacity', .7);
+    curScope.tooltipDiv
+      .style('left', (d3.event.pageX) + 'px')
+      .style('top', (d3.event.pageY - 28) + 'px');
+    curScope.ttSpan.html(d.uri);
+  }
+
+  ttOnMouseOut(d, curScope) {
+    curScope.tooltipDiv.transition()
+      .duration(500)
+      .style('opacity', 0);
   }
 
   drawEdges(items: CgLineItem[]) {
+    const curScope = this;
     const lines = this.g.selectAll('.link').data(items)
       .enter().append('g').attr('class', 'node')
-      .append('line')
+      .append('path')
+      .attr('d', function(d) {return ' M ' + d.cx1 + ' , ' + d.cy1 + ' L ' + ( d.cx1 + 2 * d.cx2) / 3 + ' , ' + ( d.cy1 + 2 * d.cy2) / 3 + ' L ' + d.cx2 + ' , ' + d.cy2; } )
       .attr('class', 'path')
-      .attr('marker-end', 'url(#arrow)')
-      .style('stroke', 'gray') // <<<<< Add a color
-      .attr('x1', function(d, i) { return  d.cx1; })
-      .attr('y1', function(d, i) { return d.cy1; })
-      .attr('x2', function(d, i) { return d.cx2; })
-      .attr('y2', function(d, i) {  return d.cy2; });
+      .attr('marker-mid', 'url(#arrow)')
+      .style('stroke', 'gray') // <<<<< Add a colo
+      .on('mouseover', function(d) {
+      curScope.ttOnMouseOver(d, curScope);
+    })
+      .on('mouseout', function(d) {
+        curScope.ttOnMouseOut(d, curScope);
+      });
   }
 
   getAllPaths(cgPaths: CgPath[]) {

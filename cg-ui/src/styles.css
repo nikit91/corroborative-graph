@@ -4,3 +4,29 @@ html, body {
   height: 100%;
   margin: 0;
 }
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  width: auto;
+  height: auto;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: black;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.text-span {
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  color: white;
+}
+
+.node .path {
+  stroke: #916dff;
+  stroke-width: 5px;
+}

@@ -37,17 +37,6 @@ export const GRAPHDATA: CgData = {
     {
       'path': [
         {
-          'subject': 'http://dbpedia.org/resource/United_States',
-          'object': 'http://dbpedia.org/resource/Barack_Obama',
-          'property': 'http://dbpedia.org/ontology/leader'
-        }
-      ],
-      'pathScore': 0.4007935322516144,
-      'pathText': 'United States\' leader is Barack Obama.'
-    },
-    {
-      'path': [
-        {
           'subject': 'http://dbpedia.org/resource/Carlton_W._Reeves',
           'object': 'http://dbpedia.org/resource/Barack_Obama',
           'property': 'http://dbpedia.org/ontology/appointer'
