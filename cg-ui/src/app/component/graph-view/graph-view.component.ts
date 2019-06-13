@@ -7,6 +7,7 @@ import {CgNodeItem} from '../../model/cg-node-item';
 import {CgLineItem} from '../../model/cg-line-item';
 import {CgPath} from '../../model/cg-path';
 import {NgControlStatusGroup} from '@angular/forms';
+import {UniqueIdProviderService} from '../../service/unique-id-provider.service';
 
 @Component({
   selector: 'app-graph-view',
@@ -18,9 +19,10 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
   graphData: CgData;
   g;
   svg;
-  private minXDist = 400;
-  private minYDist = 100;
+  private minXDist = 800;
+  private minYDist = 120;
   private nodeRad = 40;
+  private pathStrFac = 3;
   private sNode: CgNodeItem;
   private eNode: CgNodeItem;
   private sNodeX: number;
@@ -30,9 +32,19 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
   private ttSpan;
   private nodeArr: CgNodeItem[] = [];
   private edgeArr: CgLineItem[] = [];
-  constructor() { }
+  myRegexp = /\/([^\/]+)$/g;
+
+  constructor(public uip: UniqueIdProviderService) {}
 
   ngOnInit() {
+    // sort graphData
+    this.graphData.pathList.sort(this.pathSorter);
+  }
+
+  pathSorter(path1: CgPath, path2: CgPath) {
+    const len1 = path1.path.length;
+    const len2 = path2.path.length;
+    return ((len1 < len2) ? -1 : ((len1 > len2) ? 1 : 0));
   }
 
   ngAfterViewInit() {
@@ -60,26 +72,28 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
 
     const eleMap = { };
     this.sNodeY = height / 2;
-    this.sNodeX = this.nodeRad + 20;
+    this.sNodeX = width / 2;
     this.getDefaultPath(this.graphData.defaultPath);
     this.getAllPaths(this.graphData.pathList);
 
 
     this.drawEdges(this.edgeArr);
     this.drawCircles(this.nodeArr);
+    this.drawNodeLabels(this.nodeArr);
+    this.drawEdgeLables(this.edgeArr);
     // arrows
     svg.append('svg:defs').append('svg:marker')
       .attr('id', 'arrow').attr('viewBox', '0 0 10 10')
       .attr('refX', 0).attr('refY', 5)
       .attr('markerUnits', 'strokeWidth')
-      .attr('markerWidth', 10)
-      .attr('markerHeight', 6)
+      .attr('markerWidth', 7)
+      .attr('markerHeight', 2.5)
       .attr('orient', 'auto')
       .append('svg:path')
       .attr('d', 'M 0 0 L 10 5 L 0 10 z');
 
     const zoom = d3.zoom()
-      .scaleExtent([1, 10])
+      .scaleExtent([0.2, 10])
       .on('zoom', function() { g.attr('transform', d3.event.transform); });
 
     svg.call(zoom);
@@ -110,32 +124,67 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     const maxDist = this.maxXDist;
     const eNode = new CgNodeItem(this.sNodeX + maxDist, this.sNodeY, triple.object);
     this.eNode = eNode;
-    const edge = new CgLineItem(sNode.cx, sNode.cy, eNode.cx, eNode.cy, triple.property);
+    const edge = new CgLineItem(sNode.cx, sNode.cy, eNode.cx, eNode.cy, triple.property, 0.5, this.uip.getUniqueId());
 
     this.nodeArr.push(sNode);
     this.nodeArr.push(eNode);
+    edge.isDotted = true;
     this.edgeArr.push(edge);
   }
 
+  drawNodeLabels(items: CgNodeItem[]) {
+    const fontSz = 20;
+    const curScope = this;
+    const circLblG = this.g.append('g').attr('id', 'circle-label-svg');
+    const label = circLblG.selectAll('text').data(items);
+    const labelEnter = label.enter().append('text');
+    labelEnter.attr('x', function(d) { if (d.cx === curScope.sNodeX) { return d.cx - curScope.nodeRad - 10; } else if (d.cx === curScope.eNode.cx) { return d.cx + curScope.nodeRad + 10; } else { return d.cx; } });
+    labelEnter.attr('y', function(d) { if (d.cy < curScope.sNodeY) {return d.cy - curScope.nodeRad - 8; } else if (d.cy > curScope.sNodeY) {return d.cy + curScope.nodeRad + 2 + fontSz; } else {return d.cy + fontSz / 2; }});
+    labelEnter.attr('text-anchor', function(d) { if (d.cx === curScope.sNodeX) { return 'end'; } else if (d.cx === curScope.eNode.cx) { return 'start'; } else { return 'middle'; }});
+    labelEnter.text( function(d) {return curScope.getUriName(d.uri); });
+    labelEnter.attr('font-size', fontSz);
+    labelEnter.attr('class', 'label');
+  }
+
+  drawEdgeLables(items: CgLineItem[]) {
+    const curScope = this;
+    const pathLblG = this.g.append('g').attr('id', 'path-label-svg');
+    const label = pathLblG.selectAll('text').data(items);
+    const labelEnter = label.enter().append('text').attr('dy', -10).append('textPath') // append a textPath to the text element
+      .attr('xlink:href', function(d) { return '#'+d.id; }) // place the ID of the path here
+      .style('text-anchor', 'middle') // place the text halfway on the arc
+      .attr('startOffset', '50%')
+      .text(function(d){return curScope.getUriName(d.uri);});
+
+  }
+
+  getUriName(uri: string) {
+    const myRegexp = /\/([^\/]+)$/g;
+    const match = myRegexp.exec(uri);
+    return match[1];
+  }
+
   drawCircles(items: CgNodeItem[]) {
+    const nodeCol = 'orange';
     // Define the div for the tooltip
     const curScope = this;
-    const circle = this.g.selectAll('circle')
+    const circG = this.g.append('g').attr('id', 'circle-svg');
+    const circle = circG.selectAll('circle')
       .data(items);
     const circleEnter = circle.enter().append('circle');
     circleEnter.attr('cy', function(d) { return d.cy; });
     circleEnter.attr('cx', function(d) { return d.cx; });
     circleEnter.attr('r', this.nodeRad);
-    circleEnter.attr('fill', 'orange');
+    circleEnter.attr('fill', nodeCol);
     circleEnter.on('mouseover', function(d) {
       curScope.ttOnMouseOver(d, curScope);
       d3.select(this).transition()
-        .duration(300).style('fill', 'steelblue');
+        .duration(300).style('fill', '#62a6ff');
     })
       .on('mouseout', function(d) {
        curScope.ttOnMouseOut(d, curScope);
         d3.select(this).transition()
-          .duration(300).style('fill', 'orange');
+          .duration(300).style('fill', nodeCol);
       });
 
   }
@@ -157,19 +206,44 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
 
   drawEdges(items: CgLineItem[]) {
     const curScope = this;
-    const lines = this.g.selectAll('.link').data(items)
-      .enter().append('g').attr('class', 'node')
+    const pathG = this.g.append('g').attr('id', 'path-svg');
+    const lines = pathG.selectAll('.link').data(items)
+      .enter().append('g')
       .append('path')
-      .attr('d', function(d) {return ' M ' + d.cx1 + ' , ' + d.cy1 + ' L ' + ( d.cx1 + 2 * d.cx2) / 3 + ' , ' + ( d.cy1 + 2 * d.cy2) / 3 + ' L ' + d.cx2 + ' , ' + d.cy2; } )
-      .attr('class', 'path')
+      .attr('id', function(d) { return d.id; })
+      .attr('d', this.getEdgePath)
+      .style('fill', 'none')
+      .attr('class', 'line-def')
+      .style('stroke-width', function(d) { return (d.pathScore + 2) * curScope.pathStrFac + 'px'; })
       .attr('marker-mid', 'url(#arrow)')
-      .style('stroke', 'gray') // <<<<< Add a colo
       .on('mouseover', function(d) {
       curScope.ttOnMouseOver(d, curScope);
+        d3.select(this).transition()
+          .duration(300).style('stroke', '#62a6ff');
     })
       .on('mouseout', function(d) {
         curScope.ttOnMouseOut(d, curScope);
-      });
+        d3.select(this).transition()
+          .duration(300).style('stroke', '#6f6f6f');
+      }).each(function(d) { if (d.isDotted) { d3.select(this).style('stroke-dasharray', ('10, 3')); }});
+  }
+
+  getEdgePath(d: CgLineItem) {
+    let pathD = '';
+    let midX = 0;
+    let midY = 0;
+    if (d.isCurved) {
+      const lineGenerator = d3.line().curve(d3.curveNatural);
+      pathD = lineGenerator([[d.cx1, d.cy1], [d.cpx, d.cpy ], [d.cx2, d.cy2]]);
+      midX = d.cpx;
+      midY = d.cpy;
+    } else {
+      pathD = ' M ' + d.cx1 + ' , ' + d.cy1 + ' L ' + ( d.cx1 + 2 * d.cx2) / 3 + ' , '
+        + ( d.cy1 + 2 * d.cy2) / 3 + ' L ' + d.cx2 + ' , ' + d.cy2;
+      midX = ( d.cx1 +  d.cx2) / 2;
+      midY = ( d.cy1 + d.cy2) / 2;
+    }
+    return pathD;
   }
 
   getAllPaths(cgPaths: CgPath[]) {
@@ -179,6 +253,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
       const curPath = cgPaths[i];
       let prevNode = this.sNode;
       const xDelta = this.maxXDist / curPath.path.length;
+      const pathScore = curPath.pathScore;
       // Loop through each triple in a path
       for (let j = 0; j < curPath.path.length; j++) {
         const curTriple = curPath.path[j];
@@ -186,7 +261,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
         const curProp = curTriple.property;
         const curObj = curTriple.object;
         const nextNode: CgNodeItem = new CgNodeItem(prevNode.cx + xDelta, this.sNode.cy + yDelta, '');
-        const edge: CgLineItem = new CgLineItem(0, 0, 0, 0, curProp);
+        const edge: CgLineItem = new CgLineItem(0, 0, 0, 0, curProp, pathScore, this.uip.getUniqueId());
         let fromNode: CgNodeItem;
         let toNode: CgNodeItem;
         if (curSub === prevNode.uri) {
@@ -199,6 +274,11 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
           toNode = prevNode;
         }
         if (nextNode.uri === this.eNode.uri) {
+          if (prevNode.uri === this.sNode.uri) {
+            edge.isCurved = true;
+            edge.cpx = prevNode.cx + this.maxXDist / 2;
+            edge.cpy = nextNode.cy;
+          }
           nextNode.cx = this.eNode.cx;
           nextNode.cy = this.eNode.cy;
         }

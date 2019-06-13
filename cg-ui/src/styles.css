@@ -26,7 +26,17 @@ div.tooltip {
   color: white;
 }
 
-.node .path {
-  stroke: #916dff;
-  stroke-width: 5px;
+.line-sel {
+  stroke: #62a6ff;
+}
+
+.line-def {
+  stroke: #6f6f6f;
+}
+
+.label {
+  text-shadow: 2px 2px 4px #d09bff;
+  font-family: sans-serif;
+  fill: #28d0ff;
+
 }
