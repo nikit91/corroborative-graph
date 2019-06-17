@@ -52,10 +52,9 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     const curScope = this;
     const svg = d3.select('svg');
     // fixme: fix the workaround
-    // noinspection TypeScriptUnresolvedVariable
-    let width = svg.node().clientWidth;
-    // noinspection TypeScriptUnresolvedVariable
-    let height = svg.node().clientHeight;
+    const nodeSvg: any = svg.node();
+    let width = nodeSvg.clientWidth;
+    let height = nodeSvg.clientHeight;
     if (width === 0 || height === 0) {
       width = 500;
       height = 500;
@@ -150,11 +149,21 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     const curScope = this;
     const pathLblG = this.g.append('g').attr('id', 'path-label-svg');
     const label = pathLblG.selectAll('text').data(items);
-    const labelEnter = label.enter().append('text').attr('dy', -10).append('textPath') // append a textPath to the text element
-      .attr('xlink:href', function(d) { return '#'+d.id; }) // place the ID of the path here
+    const labelEnter = label.enter().append('text').attr('dy', -10).attr('transform', function(d) {
+      if (d.cx1 > d.cx2 && !d.isCurved) {
+        // d3.select(this).attr('transform-origin', (d.cx1 + d.cx2) / 2 + ',' + (d.cy1 + d.cy2) / 2 );
+         return  'rotate(180 ' + (d.cx1 + d.cx2) / 2 + ',' + (d.cy1 + d.cy2) / 2  + ')';
+      }
+        if (d.cx1 > d.cx2 && d.isCurved) {
+          // d3.select(this).attr('transform-origin', (d.cx1 + d.cx2) / 2 + ',' + (d.cy1 + d.cy2) / 2 );
+          return  'rotate(180 ' + d.cpx + ',' + d.cpy + ')';
+        }
+      return ''; }).append('textPath') // append a textPath to the text element
+      .attr('xlink:href', function(d) { return '#' + d.id; }) // place the ID of the path here
       .style('text-anchor', 'middle') // place the text halfway on the arc
       .attr('startOffset', '50%')
-      .text(function(d){return curScope.getUriName(d.uri);});
+      .text(function(d) { return curScope.getUriName(d.uri); })
+      ;
 
   }
 
