@@ -7,6 +7,7 @@ import {GRAPHDATA} from './model/mock-data';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  showGraph = false;
   title = 'cg-ui';
   getGraphData() {
     return GRAPHDATA;

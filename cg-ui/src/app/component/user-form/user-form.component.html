@@ -1,0 +1,24 @@
+<div fxLayoutAlign="center center" fxFlexFill>
+  <mat-card style="min-width: 500px;">
+    <form fxLayout="column wrap" fxLayoutGap="10px">
+      <div fxLayout="column wrap" fxLayoutGap="10px">
+        <mat-form-field>
+          <input matInput placeholder="Subject" value="http://dbpedia.org/resource/Barack_Obama">
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput placeholder="Property" value="http://dbpedia.org/ontology/nationality">
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput placeholder="Object" value="http://dbpedia.org/resource/United_States">
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-checkbox>Verbalized</mat-checkbox>
+      </div>
+      <div fxFlexAlign="center">
+        <button mat-button fxFlex="initial">Submit</button>
+      </div>
+    </form>
+  </mat-card>
+</div>
+

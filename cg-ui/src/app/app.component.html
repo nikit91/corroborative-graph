@@ -1,1 +1,7 @@
-<app-graph-view [graphData]="getGraphData()"></app-graph-view>
+<!--<app-graph-view [graphData]="getGraphData()"></app-graph-view>-->
+<div fxFlexFill>
+  <div style="background: #28d0ff" *ngIf="showGraph; then graphblock else inputblock" fxFlexFill>
+  </div>
+  <ng-template #inputblock><app-user-form></app-user-form></ng-template>
+  <ng-template #graphblock><app-graph-view [graphData]="getGraphData()"></app-graph-view></ng-template>
+</div>
