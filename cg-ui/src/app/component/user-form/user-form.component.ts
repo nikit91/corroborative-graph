@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {EventProviderService} from '../../service/event/event-provider.service';
 
 @Component({
   selector: 'app-user-form',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class UserFormComponent implements OnInit {
 
-  constructor() { }
+  constructor(public eventService: EventProviderService) { }
 
   ngOnInit() {
+  }
+
+  showGraph() {
+    this.eventService.viewChangeEvent.emit( true );
   }
 
 }

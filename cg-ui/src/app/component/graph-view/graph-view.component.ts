@@ -63,9 +63,10 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
 
     this.g = svg.append('g');
     const g = this.g;
-    this.tooltipDiv = d3.select('body').append('div')
+    this.tooltipDiv = d3.select('#result-body').append('div')
       .attr('class', 'tooltip')
-      .style('opacity', 0);
+      .style('opacity', 0)
+      .style('height', 'auto');
 
     this.ttSpan = this.tooltipDiv.append('div').attr('class', 'text-span');
 
@@ -123,7 +124,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     const maxDist = this.maxXDist;
     const eNode = new CgNodeItem(this.sNodeX + maxDist, this.sNodeY, triple.object);
     this.eNode = eNode;
-    const edge = new CgLineItem(sNode.cx, sNode.cy, eNode.cx, eNode.cy, triple.property, 0.5, this.uip.getUniqueId());
+    const edge = new CgLineItem(sNode.cx, sNode.cy, eNode.cx, eNode.cy, triple.property, 0.5, this.uip.getUniqueId(), -1);
 
     this.nodeArr.push(sNode);
     this.nodeArr.push(eNode);
@@ -142,7 +143,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     labelEnter.attr('text-anchor', function(d) { if (d.cx === curScope.sNodeX) { return 'end'; } else if (d.cx === curScope.eNode.cx) { return 'start'; } else { return 'middle'; }});
     labelEnter.text( function(d) {return curScope.getUriName(d.uri); });
     labelEnter.attr('font-size', fontSz);
-    labelEnter.attr('class', 'label');
+    labelEnter.attr('class', 'node-lbl');
   }
 
   drawEdgeLables(items: CgLineItem[]) {
@@ -163,6 +164,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
       .style('text-anchor', 'middle') // place the text halfway on the arc
       .attr('startOffset', '50%')
       .text(function(d) { return curScope.getUriName(d.uri); })
+      .attr('class', 'edge-lbl')
       ;
 
   }
@@ -216,9 +218,9 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
   drawEdges(items: CgLineItem[]) {
     const curScope = this;
     const pathG = this.g.append('g').attr('id', 'path-svg');
-    const lines = pathG.selectAll('.link').data(items)
-      .enter().append('g')
-      .append('path')
+    const linesG = pathG.selectAll('.link').data(items)
+      .enter().append('g');
+    const lines = linesG.append('path')
       .attr('id', function(d) { return d.id; })
       .attr('d', this.getEdgePath)
       .style('fill', 'none')
@@ -227,13 +229,22 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
       .attr('marker-mid', 'url(#arrow)')
       .on('mouseover', function(d) {
       curScope.ttOnMouseOver(d, curScope);
+
+        linesG.selectAll('path').each(function(d1: CgLineItem){ if(d1.pathId == d.pathId && d.id!=d1.id){
+          d3.select(this).transition()
+            .duration(300).attr('class', 'line-path-sel');
+        } });
         d3.select(this).transition()
-          .duration(300).style('stroke', '#62a6ff');
+          .duration(300).attr('class', 'line-sel');
     })
       .on('mouseout', function(d) {
         curScope.ttOnMouseOut(d, curScope);
+        linesG.selectAll('path').each(function(d1: CgLineItem){ if(d1.pathId == d.pathId && d.id!=d1.id){
+          d3.select(this).transition()
+            .duration(300).attr('class', 'line-def');
+        } });
         d3.select(this).transition()
-          .duration(300).style('stroke', '#6f6f6f');
+          .duration(300).attr('class', 'line-def');
       }).each(function(d) { if (d.isDotted) { d3.select(this).style('stroke-dasharray', ('10, 3')); }});
   }
 
@@ -270,7 +281,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
         const curProp = curTriple.property;
         const curObj = curTriple.object;
         const nextNode: CgNodeItem = new CgNodeItem(prevNode.cx + xDelta, this.sNode.cy + yDelta, '');
-        const edge: CgLineItem = new CgLineItem(0, 0, 0, 0, curProp, pathScore, this.uip.getUniqueId());
+        const edge: CgLineItem = new CgLineItem(0, 0, 0, 0, curProp, pathScore, this.uip.getUniqueId(), i);
         let fromNode: CgNodeItem;
         let toNode: CgNodeItem;
         if (curSub === prevNode.uri) {

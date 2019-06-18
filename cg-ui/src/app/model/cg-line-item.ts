@@ -10,7 +10,8 @@ export class CgLineItem {
   cpy: number;
   pathScore: number;
   isDotted: boolean;
-  constructor(cx1: number, cy1: number, cx2: number, cy2: number, uri: string, pathScore: number, id) {
+  pathId: number;
+  constructor(cx1: number, cy1: number, cx2: number, cy2: number, uri: string, pathScore: number, id, pathId) {
     this.id = id;
     this.cx1 = cx1;
     this.cy1 = cy1;
@@ -18,5 +19,6 @@ export class CgLineItem {
     this.cy2 = cy2;
     this.uri = uri;
     this.pathScore = pathScore;
+    this.pathId = pathId;
   }
 }

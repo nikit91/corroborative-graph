@@ -27,19 +27,44 @@ div.tooltip {
 }
 
 .line-sel {
-  stroke: #62a6ff;
+  stroke: #6fcbff;
 }
-
+.line-shadow {
+  filter: url('#dropshadow');
+}
 .line-def {
   stroke: #6f6f6f;
 }
 
-.label {
-  text-shadow: 2px 2px 4px #d09bff;
-  font-family: sans-serif;
-  fill: #28d0ff;
+.line-path-sel {
+  stroke: orangered;
+}
 
+
+
+.node-lbl {
+  font-family: sans-serif;
+  fill: #564ac5;
+  stroke: white;
+  stroke-width: 0.5px;
+  stroke-opacity: 0.8;
+  font-size: 25px;
+}
+
+.edge-lbl {
+  font-family: sans-serif;
+  fill: #75a564;
+  font-size: 18px;
 }
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.container {
+  margin: 5px;
+  border-color: #eaeaea;
+  border-style: solid;
+  height: 95%;
+  width: 95%;
+}
+

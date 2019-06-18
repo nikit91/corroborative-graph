@@ -3,5 +3,7 @@
   <div style="background: #28d0ff" *ngIf="showGraph; then graphblock else inputblock" fxFlexFill>
   </div>
   <ng-template #inputblock><app-user-form></app-user-form></ng-template>
-  <ng-template #graphblock><app-graph-view [graphData]="getGraphData()"></app-graph-view></ng-template>
+  <ng-template #graphblock>
+    <app-result-view [graphData]="getGraphData()"></app-result-view>
+  </ng-template>
 </div>
