@@ -6,16 +6,18 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   MatButtonModule,
   MatCardModule,
-  MatCheckboxModule,
+  MatCheckboxModule, MatExpansionModule,
   MatFormFieldModule,
   MatIconModule,
-  MatInputModule,
+  MatInputModule, MatListModule, MatProgressBarModule, MatProgressSpinnerModule,
   MatTooltipModule
 } from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import { UserFormComponent } from './component/user-form/user-form.component';
 import { DetailViewComponent } from './component/detail-view/detail-view.component';
 import { ResultViewComponent } from './component/result-view/result-view.component';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,13 @@ import { ResultViewComponent } from './component/result-view/result-view.compone
     MatCardModule,
     MatCheckboxModule,
     MatIconModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatExpansionModule,
+    MatListModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    MatProgressBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

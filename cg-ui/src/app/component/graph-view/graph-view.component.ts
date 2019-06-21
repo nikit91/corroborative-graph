@@ -38,6 +38,12 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
   private mouseOutTog = -2;
   myRegexp = /\/([^\/]+)$/g;
 
+  static getUriName(uri: string) {
+    const myRegexp = /\/([^\/]+)$/g;
+    const match = myRegexp.exec(uri);
+    return match[1];
+  }
+
   constructor(public uip: UniqueIdProviderService, public evntService: EventProviderService) {
     this.evntService.detailClickEvent.subscribe((id) => { this.highlightPath(id);});
   }
@@ -79,7 +85,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     const eleMap = { };
     this.sNodeY = height / 2;
     this.sNodeX = width / 2;
-    this.getDefaultPath(this.graphData.defaultPath);
+    this.getDefaultPath(this.graphData.inputTriple);
     this.getAllPaths(this.graphData.pathList);
     // Sending pathlist to details view (with id added)
     this.sendDetails(this.graphData.pathList);
@@ -151,7 +157,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     labelEnter.attr('x', function(d) { if (d.cx === curScope.sNodeX) { return d.cx - curScope.nodeRad - 10; } else if (d.cx === curScope.eNode.cx) { return d.cx + curScope.nodeRad + 10; } else { return d.cx; } });
     labelEnter.attr('y', function(d) { if (d.cy < curScope.sNodeY) {return d.cy - curScope.nodeRad - 8; } else if (d.cy > curScope.sNodeY) {return d.cy + curScope.nodeRad + 2 + fontSz; } else {return d.cy + fontSz / 2; }});
     labelEnter.attr('text-anchor', function(d) { if (d.cx === curScope.sNodeX) { return 'end'; } else if (d.cx === curScope.eNode.cx) { return 'start'; } else { return 'middle'; }});
-    labelEnter.text( function(d) {return curScope.getUriName(d.uri); });
+    labelEnter.text( function(d) {return GraphViewComponent.getUriName(d.uri); });
     labelEnter.attr('font-size', fontSz);
     labelEnter.attr('class', 'node-lbl');
   }
@@ -173,16 +179,10 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
       .attr('xlink:href', function(d) { return '#' + d.id; }) // place the ID of the path here
       .style('text-anchor', 'middle') // place the text halfway on the arc
       .attr('startOffset', '50%')
-      .text(function(d) { return curScope.getUriName(d.uri); })
+      .text(function(d) { return GraphViewComponent.getUriName(d.uri); })
       .attr('class', 'edge-lbl')
       ;
 
-  }
-
-  getUriName(uri: string) {
-    const myRegexp = /\/([^\/]+)$/g;
-    const match = myRegexp.exec(uri);
-    return match[1];
   }
 
   drawCircles(items: CgNodeItem[]) {

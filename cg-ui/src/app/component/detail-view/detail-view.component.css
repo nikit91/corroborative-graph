@@ -11,3 +11,15 @@
 .card-no-highlight {
   background-color: white;
 }
+
+.text-subj {
+  color: orange;
+}
+
+.text-prop {
+  color: #2ca04d;
+}
+
+.text-obj {
+  color: #29aeff;
+}

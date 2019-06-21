@@ -1,6 +1,8 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {EventProviderService} from '../../service/event/event-provider.service';
 import {CgPath} from '../../model/cg-path';
+import {CgTriple} from '../../model/cg-triple';
+import {GraphViewComponent} from '../graph-view/graph-view.component';
 
 @Component({
   selector: 'app-detail-view',
@@ -11,21 +13,7 @@ export class DetailViewComponent implements OnInit {
   @ViewChild('detListContainer', {static: false})
   private detListContainer: ElementRef;
   statMap = {};
-  infoArr: CgPath[] = [
-    {
-      id: 1,
-      pathScore: 0.5643433,
-      pathText: 'Barack Obama\'s party is Democratic Party (United States). Democratic Party (United States)\'s country is United States.'},
-    {
-      id: 2,
-      'pathScore': 0.3217161063154906,
-      'pathText': 'Carlton W. Reeves\' appointer is Barack Obama. Carlton W. Reeves\' birth place is United States.'},
-    {
-      id: 3,
-      'pathScore': 0.26283496411895807,
-      'pathText': 'Nuevo (Bayamón)\'s leader name is Barack Obama. Nuevo Bayamón is part of United States.'
-    },
-  ];
+  infoArr: CgPath[] = [];
   constructor(public evntService: EventProviderService) {
     evntService.sendDetailEvent.subscribe((infoArr: CgPath[]) => {
       setTimeout(() => {this.infoArr = Object.assign([], infoArr);
@@ -90,6 +78,21 @@ export class DetailViewComponent implements OnInit {
     this.detListContainer.nativeElement.scrollTop = offsetTop - elem.offsetHeight;
     this.setAllItemHovDef();
     this.setItemHov(id, true);
+  }
+
+  getTripleString(trip: CgTriple) {
+    const subj = this.getTextSpan(GraphViewComponent.getUriName(trip.subject), 'text-subj');
+    const prop = this.getTextSpan(GraphViewComponent.getUriName(trip.property), 'text-prop');
+    const obj = this.getTextSpan(GraphViewComponent.getUriName(trip.object), 'text-obj');
+    return subj + ' ' + prop + ' ' + obj;
+  }
+
+  getUriStr(uri: string) {
+    return GraphViewComponent.getUriName(uri);
+  }
+
+  private getTextSpan(text: string, className: string) {
+    return '<span class="' + className + '">' + text + '</span>';
   }
 
 }

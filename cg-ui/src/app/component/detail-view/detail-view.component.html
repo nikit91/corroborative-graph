@@ -1,16 +1,26 @@
 <div fxLayout="column" fxLayoutGap="10px">
   <div class="list-container" fxLayout="column" fxFlex="initial" #detListContainer>
 
-    <div fxLayout="column">
-      <mat-card *ngFor="let info of infoArr" style="margin: 5px;" (click)="detailCardClick(info.id)" (mouseover)="setItemHov(info.id, true)" (mouseleave)="setItemHov(info.id, false)"
-                [ngClass]="getItemClass(info.id)" [attr.id]="'detcard-'+ info.id">
-        <mat-card-content>
-          <div fxLayout="column">
+    <div fxLayout="column" fxLayoutGap="10px" style="margin: 10px">
+      <mat-expansion-panel *ngFor="let info of infoArr" (click)="detailCardClick(info.id)" (mouseover)="setItemHov(info.id, true)" (mouseleave)="setItemHov(info.id, false)"
+                           [ngClass]="getItemClass(info.id)" [attr.id]="'detcard-'+ info.id">
+        <mat-expansion-panel-header style="margin: 10px;">
+          <mat-panel-title>
             <span><b>Path Score:</b> {{info.pathScore | number:'0.8-8'}}</span>
-            <span><b>Path Text:</b>  {{info.pathText}}</span>
-          </div>
-        </mat-card-content>
-      </mat-card>
+
+          </mat-panel-title>
+
+        </mat-expansion-panel-header>
+        <div fxLayout="column wrap" fxLayoutGap="5px">
+                <span *ngIf="info.pathText && info.pathText.length > 0"><b>Path Text:</b>  {{info.pathText}}</span>
+                <span *ngFor="let path of info.path; let i = index">
+                  <b>Triple {{i+1}} : </b>
+                  <span class="text-subj"><a [href]="path.subject" target="_blank">{{getUriStr(path.subject)}}</a></span>&nbsp;
+                  <span class="text-prop"><a [href]="path.subject" target="_blank">{{getUriStr(path.property)}}</a></span>&nbsp;
+                  <span class="text-obj"><a [href]="path.subject" target="_blank">{{getUriStr(path.object)}}</a></span>&nbsp;
+                </span>
+        </div>
+      </mat-expansion-panel>
     </div>
   </div>
   <div fxLayoutAlign="center center">

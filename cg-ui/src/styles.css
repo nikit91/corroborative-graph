@@ -27,7 +27,7 @@ div.tooltip {
 }
 
 .line-sel {
-  stroke: #6fcbff;
+  stroke: orangered;
 }
 .line-shadow {
   filter: url('#dropshadow');
@@ -73,3 +73,12 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   height: 85vh;
 }
 
+.alert-danger {
+  color: red;
+}
+.alert-success {
+  color: green;
+}
+.alert{
+  font-size: 10px;
+}

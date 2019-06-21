@@ -345,7 +345,7 @@ export const GRAPHDATA = {
     }
     ],
   'graphScore': 0.9999887811713948,
-  'defaultPath': {
+  'inputTriple': {
     'subject': 'http://dbpedia.org/resource/Barack_Obama',
     'object': 'http://dbpedia.org/resource/United_States',
     'property': 'http://dbpedia.org/ontology/nationality'
