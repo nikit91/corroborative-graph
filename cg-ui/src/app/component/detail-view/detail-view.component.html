@@ -1,3 +1,18 @@
-<div class="container">
-  Click on paths in graph to display details here!
+<div fxLayout="column" fxLayoutGap="10px">
+  <div class="list-container" fxLayout="column" fxFlex="initial" >
+
+    <div fxLayout="column">
+      <mat-card *ngFor="let info of infoArr" style="margin: 5px;">
+        <mat-card-content>
+          <div fxLayout="column">
+            <span><b>Path Score:</b> {{info.pathScore | number:'0.8-8'}}</span>
+            <span><b>Path Text:</b>  {{info.pathText}}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+  <div fxLayoutAlign="center center">
+    <span class="notice-text">Click on paths to highlight the path details or vice versa!</span>
+  </div>
 </div>

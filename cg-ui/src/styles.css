@@ -57,14 +57,19 @@ div.tooltip {
   font-size: 18px;
 }
 
-html, body { height: 100%; }
+html, body { height: 100vh; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .container {
-  margin: 5px;
   border-color: #eaeaea;
   border-style: solid;
-  height: 95%;
-  width: 95%;
+  height: 98%;
+  width: 98%;
+}
+
+.list-container {
+  border: solid #eaeaea;
+  overflow-y: auto;
+  height: 85vh;
 }
 

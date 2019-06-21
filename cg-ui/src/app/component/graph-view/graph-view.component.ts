@@ -8,6 +8,7 @@ import {CgLineItem} from '../../model/cg-line-item';
 import {CgPath} from '../../model/cg-path';
 import {NgControlStatusGroup} from '@angular/forms';
 import {UniqueIdProviderService} from '../../service/unique-id-provider.service';
+import {EventProviderService} from '../../service/event/event-provider.service';
 
 @Component({
   selector: 'app-graph-view',
@@ -32,9 +33,10 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
   private ttSpan;
   private nodeArr: CgNodeItem[] = [];
   private edgeArr: CgLineItem[] = [];
+  private mouseOutTog = -2;
   myRegexp = /\/([^\/]+)$/g;
 
-  constructor(public uip: UniqueIdProviderService) {}
+  constructor(public uip: UniqueIdProviderService, public evntService: EventProviderService) {}
 
   ngOnInit() {
     // sort graphData
@@ -75,7 +77,8 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     this.sNodeX = width / 2;
     this.getDefaultPath(this.graphData.defaultPath);
     this.getAllPaths(this.graphData.pathList);
-
+    // Sending pathlist to details view (with id added)
+    this.sendDetails(this.graphData.pathList);
 
     this.drawEdges(this.edgeArr);
     this.drawCircles(this.nodeArr);
@@ -230,7 +233,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
       .on('mouseover', function(d) {
       curScope.ttOnMouseOver(d, curScope);
 
-        linesG.selectAll('path').each(function(d1: CgLineItem){ if(d1.pathId == d.pathId && d.id!=d1.id){
+        linesG.selectAll('path').each(function(d1: CgLineItem) { if (d1.pathId === d.pathId && d.id !== d1.id) {
           d3.select(this).transition()
             .duration(300).attr('class', 'line-path-sel');
         } });
@@ -239,12 +242,37 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     })
       .on('mouseout', function(d) {
         curScope.ttOnMouseOut(d, curScope);
-        linesG.selectAll('path').each(function(d1: CgLineItem){ if(d1.pathId == d.pathId && d.id!=d1.id){
+        if (curScope.mouseOutTog === d.pathId) {
+          return;
+        }
+
+        linesG.selectAll('path').each(function(d1: CgLineItem) { if (d1.pathId === d.pathId && d.id !== d1.id) {
           d3.select(this).transition()
             .duration(300).attr('class', 'line-def');
         } });
         d3.select(this).transition()
           .duration(300).attr('class', 'line-def');
+      }).on('click', function(d) {
+
+        if (curScope.mouseOutTog === d.pathId) {
+          curScope.mouseOutTog = -2;
+          linesG.selectAll('path').each(function(d1: CgLineItem) {
+            d3.select(this).transition()
+              .duration(300).attr('class', 'line-def'); });
+        } else {
+          curScope.mouseOutTog = d.pathId;
+          linesG.selectAll('path').each(function(d1: CgLineItem) {
+            if (d1.pathId === d.pathId && d.id !== d1.id) {
+              d3.select(this).transition()
+                .duration(300).attr('class', 'line-path-sel');
+            } else if (d1.pathId !== d.pathId) {
+              d3.select(this).transition()
+                .duration(300).attr('class', 'line-def');
+            }
+          });
+          d3.select(this).transition()
+            .duration(300).attr('class', 'line-sel');
+        }
       }).each(function(d) { if (d.isDotted) { d3.select(this).style('stroke-dasharray', ('10, 3')); }});
   }
 
@@ -266,11 +294,17 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     return pathD;
   }
 
+  sendDetails(cgPaths: CgPath[]) {
+    this.evntService.sendDetailEvent.emit(cgPaths);
+  }
+
   getAllPaths(cgPaths: CgPath[]) {
     let yDelta = this.minYDist;
     // Loop through all the paths
     for (let i = 0; i < cgPaths.length; i++) {
+      const pathId = i;
       const curPath = cgPaths[i];
+      curPath.id = pathId;
       let prevNode = this.sNode;
       const xDelta = this.maxXDist / curPath.path.length;
       const pathScore = curPath.pathScore;
@@ -281,7 +315,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
         const curProp = curTriple.property;
         const curObj = curTriple.object;
         const nextNode: CgNodeItem = new CgNodeItem(prevNode.cx + xDelta, this.sNode.cy + yDelta, '');
-        const edge: CgLineItem = new CgLineItem(0, 0, 0, 0, curProp, pathScore, this.uip.getUniqueId(), i);
+        const edge: CgLineItem = new CgLineItem(0, 0, 0, 0, curProp, pathScore, this.uip.getUniqueId(), pathId);
         let fromNode: CgNodeItem;
         let toNode: CgNodeItem;
         if (curSub === prevNode.uri) {

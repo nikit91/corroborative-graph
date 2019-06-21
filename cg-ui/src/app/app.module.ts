@@ -3,7 +3,15 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { GraphViewComponent } from './component/graph-view/graph-view.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatButtonModule, MatCardModule, MatCheckboxModule, MatFormFieldModule, MatIconModule, MatInputModule} from '@angular/material';
+import {
+  MatButtonModule,
+  MatCardModule,
+  MatCheckboxModule,
+  MatFormFieldModule,
+  MatIconModule,
+  MatInputModule,
+  MatTooltipModule
+} from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import { UserFormComponent } from './component/user-form/user-form.component';
 import { DetailViewComponent } from './component/detail-view/detail-view.component';
@@ -26,7 +34,8 @@ import { ResultViewComponent } from './component/result-view/result-view.compone
     FlexLayoutModule,
     MatCardModule,
     MatCheckboxModule,
-    MatIconModule
+    MatIconModule,
+    MatTooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent]

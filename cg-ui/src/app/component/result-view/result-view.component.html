@@ -1,13 +1,15 @@
-<div fxFlexFill fxLayout="column" id="result-body">
+<div fxFlexFill fxLayout="column" id="result-body" fxLayoutGap="10px">
   <div class="back-button-container">
     <button mat-button fxFlex="initial" (click)="showForm()"><mat-icon>arrow_back</mat-icon>Back</button>
   </div>
-  <div fxFlex="auto" fxLayout="row">
-    <div fxFlex="70">
+  <div fxFlex="auto" fxLayout="row" fxLayoutGap="10px">
+    <div fxFlex="1"></div>
+    <div fxFlex="69">
       <app-graph-view  [graphData]="graphData"></app-graph-view>
     </div>
-    <div fxFlex="30">
+    <div fxFlex="29">
       <app-detail-view></app-detail-view>
     </div>
+    <div fxFlex="1"></div>
   </div>
 </div>

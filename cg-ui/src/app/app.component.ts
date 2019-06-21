@@ -8,7 +8,7 @@ import {EventProviderService} from './service/event/event-provider.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  showGraph = false;
+  showGraph = true;
   title = 'cg-ui';
   constructor(eventService: EventProviderService) {
     eventService.viewChangeEvent.subscribe((graphBool: boolean) => {
