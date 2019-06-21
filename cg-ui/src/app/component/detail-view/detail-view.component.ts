@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {EventProviderService} from '../../service/event/event-provider.service';
 import {CgPath} from '../../model/cg-path';
 
@@ -8,6 +8,9 @@ import {CgPath} from '../../model/cg-path';
   styleUrls: ['./detail-view.component.css']
 })
 export class DetailViewComponent implements OnInit {
+  @ViewChild('detListContainer', {static: false})
+  private detListContainer: ElementRef;
+  statMap = {};
   infoArr: CgPath[] = [
     {
       id: 1,
@@ -23,12 +26,17 @@ export class DetailViewComponent implements OnInit {
       'pathText': 'Nuevo (Bayamón)\'s leader name is Barack Obama. Nuevo Bayamón is part of United States.'
     },
   ];
-  constructor(evntService: EventProviderService) {
+  constructor(public evntService: EventProviderService) {
     evntService.sendDetailEvent.subscribe((infoArr: CgPath[]) => {
       setTimeout(() => {this.infoArr = Object.assign([], infoArr);
       this.infoArr.sort(this.pathScoreSorter);
+      this.setAllItemHovDef();
       });
 
+    });
+
+    evntService.pathClickEvent.subscribe((id: number) => {
+      this.scrollToDetItem(id);
     });
   }
 
@@ -48,8 +56,40 @@ export class DetailViewComponent implements OnInit {
 
   }
 
-  addItem() {
+  detailCardClick(id: number) {
+    this.evntService.detailClickEvent.emit(id);
+  }
 
+  getItemClass(id: number) {
+
+    if (this.statMap[id.toString()] && this.statMap[id.toString()].hover) {
+      return 'card-highlight';
+    }
+    return 'card-no-highlight';
+  }
+
+  setItemHov(id: number, val: boolean) {
+    if (this.statMap[id.toString()]) {
+      this.statMap[id.toString()].hover = val;
+    }
+  }
+
+  setAllItemHovDef() {
+    for (let i = 0; i < this.infoArr.length; i++) {
+      const id = this.infoArr[i].id;
+      this.statMap[id] = { hover: false};
+    }
+  }
+
+  scrollToDetItem(id: number) {
+    if (!this.statMap[id.toString()]) {
+      return;
+    }
+    const elem = document.getElementById('detcard-' + id);
+    const offsetTop = elem.offsetTop;
+    this.detListContainer.nativeElement.scrollTop = offsetTop - elem.offsetHeight;
+    this.setAllItemHovDef();
+    this.setItemHov(id, true);
   }
 
 }

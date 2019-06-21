@@ -7,5 +7,7 @@ import {CgPath} from '../../model/cg-path';
 export class EventProviderService {
   viewChangeEvent = new EventEmitter<boolean>();
   sendDetailEvent = new EventEmitter<CgPath[]>();
+  detailClickEvent = new EventEmitter<number>();
+  pathClickEvent = new EventEmitter<number>();
   constructor() { }
 }

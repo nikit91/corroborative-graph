@@ -1,8 +1,9 @@
 <div fxLayout="column" fxLayoutGap="10px">
-  <div class="list-container" fxLayout="column" fxFlex="initial" >
+  <div class="list-container" fxLayout="column" fxFlex="initial" #detListContainer>
 
     <div fxLayout="column">
-      <mat-card *ngFor="let info of infoArr" style="margin: 5px;">
+      <mat-card *ngFor="let info of infoArr" style="margin: 5px;" (click)="detailCardClick(info.id)" (mouseover)="setItemHov(info.id, true)" (mouseleave)="setItemHov(info.id, false)"
+                [ngClass]="getItemClass(info.id)" [attr.id]="'detcard-'+ info.id">
         <mat-card-content>
           <div fxLayout="column">
             <span><b>Path Score:</b> {{info.pathScore | number:'0.8-8'}}</span>

@@ -20,6 +20,8 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
   graphData: CgData;
   g;
   svg;
+  linesG;
+
   private minXDist = 800;
   private minYDist = 120;
   private nodeRad = 40;
@@ -36,7 +38,9 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
   private mouseOutTog = -2;
   myRegexp = /\/([^\/]+)$/g;
 
-  constructor(public uip: UniqueIdProviderService, public evntService: EventProviderService) {}
+  constructor(public uip: UniqueIdProviderService, public evntService: EventProviderService) {
+    this.evntService.detailClickEvent.subscribe((id) => { this.highlightPath(id);});
+  }
 
   ngOnInit() {
     // sort graphData
@@ -100,6 +104,9 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
       .on('zoom', function() { g.attr('transform', d3.event.transform); });
 
     svg.call(zoom);
+
+    const midX = (this.sNode.cx + this.eNode.cx) / 2;
+    const midY = (this.sNode.cy + this.eNode.cy) / 2;
   }
 
   saveToMap(key, valKey, elDt, eleMap) {
@@ -223,6 +230,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     const pathG = this.g.append('g').attr('id', 'path-svg');
     const linesG = pathG.selectAll('.link').data(items)
       .enter().append('g');
+    this.linesG = linesG;
     const lines = linesG.append('path')
       .attr('id', function(d) { return d.id; })
       .attr('d', this.getEdgePath)
@@ -261,6 +269,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
               .duration(300).attr('class', 'line-def'); });
         } else {
           curScope.mouseOutTog = d.pathId;
+          curScope.evntService.pathClickEvent.emit(d.pathId);
           linesG.selectAll('path').each(function(d1: CgLineItem) {
             if (d1.pathId === d.pathId && d.id !== d1.id) {
               d3.select(this).transition()
@@ -355,6 +364,16 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
         yDelta = -yDelta + this.minYDist;
       }
     }
+  }
+
+  highlightPath(id: number) {
+    this.mouseOutTog = id;
+    this.linesG.selectAll('path').attr('class', function(d: CgLineItem) {
+      if (d.pathId === id) {
+        return 'line-path-sel';
+      }
+      return 'line-def';
+    });
   }
 
 }

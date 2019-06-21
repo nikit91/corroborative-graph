@@ -3,3 +3,11 @@
   color: darkgrey;
   font-weight: bold;
 }
+
+.card-highlight {
+  background-color: #ffa5002b;
+}
+
+.card-no-highlight {
+  background-color: white;
+}
