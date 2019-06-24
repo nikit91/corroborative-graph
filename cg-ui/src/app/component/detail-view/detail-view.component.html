@@ -16,8 +16,8 @@
                 <span *ngFor="let path of info.path; let i = index">
                   <b>Triple {{i+1}} : </b>
                   <span class="text-subj"><a [href]="path.subject" target="_blank">{{getUriStr(path.subject)}}</a></span>&nbsp;
-                  <span class="text-prop"><a [href]="path.subject" target="_blank">{{getUriStr(path.property)}}</a></span>&nbsp;
-                  <span class="text-obj"><a [href]="path.subject" target="_blank">{{getUriStr(path.object)}}</a></span>&nbsp;
+                  <span class="text-prop"><a [href]="path.property" target="_blank">{{getUriStr(path.property)}}</a></span>&nbsp;
+                  <span class="text-obj"><a [href]="path.object" target="_blank">{{getUriStr(path.object)}}</a></span>&nbsp;
                 </span>
         </div>
       </mat-expansion-panel>
