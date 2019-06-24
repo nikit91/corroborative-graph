@@ -9,6 +9,7 @@ import {CgPath} from '../../model/cg-path';
 import {NgControlStatusGroup} from '@angular/forms';
 import {UniqueIdProviderService} from '../../service/unique-id-provider.service';
 import {EventProviderService} from '../../service/event/event-provider.service';
+import {style} from 'd3';
 
 @Component({
   selector: 'app-graph-view',
@@ -45,7 +46,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
   }
 
   constructor(public uip: UniqueIdProviderService, public evntService: EventProviderService) {
-    this.evntService.detailClickEvent.subscribe((id) => { this.highlightPath(id);});
+    this.evntService.detailClickEvent.subscribe((id) => { this.highlightPath(id); });
   }
 
   ngOnInit() {
@@ -63,7 +64,7 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
     this.maxXDist = this.getMaxDist(this.graphData);
     const curScope = this;
     const svg = d3.select('svg');
-    // fixme: fix the workaround
+
     const nodeSvg: any = svg.node();
     let width = nodeSvg.clientWidth;
     let height = nodeSvg.clientHeight;
@@ -106,13 +107,29 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
       .attr('d', 'M 0 0 L 10 5 L 0 10 z');
 
     const zoom = d3.zoom()
-      .scaleExtent([0.2, 10])
+      .scaleExtent([0.1, 10])
       .on('zoom', function() { g.attr('transform', d3.event.transform); });
 
     svg.call(zoom);
 
     const midX = (this.sNode.cx + this.eNode.cx) / 2;
     const midY = (this.sNode.cy + this.eNode.cy) / 2;
+
+    const texts = ['Use the scroll to zoom'];
+
+    svg.selectAll('overlay-text')
+      .data(texts)
+      .enter()
+      .append('text')
+      .attr('x', 10)
+      .attr('y', function(d, i) { return (height - 20) + i * 18; })
+      .text(function(d) { return d; })
+      .style('fill', 'grey')
+      .style('opacity', '0.5')
+      .on('click', function(d) {
+          d3.select(this).transition()
+            .duration(300).style('display', 'none');
+      });
   }
 
   saveToMap(key, valKey, elDt, eleMap) {

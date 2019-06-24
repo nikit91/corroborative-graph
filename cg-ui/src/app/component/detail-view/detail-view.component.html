@@ -12,7 +12,7 @@
 
         </mat-expansion-panel-header>
         <div fxLayout="column wrap" fxLayoutGap="5px">
-                <span *ngIf="info.pathText && info.pathText.length > 0"><b>Path Text:</b>  {{info.pathText}}</span>
+                <span *ngIf="info.pathText && info.pathText.length > 0 && info.pathText !=='Not available'"><b>Path Text:</b>  {{info.pathText}}</span>
                 <span *ngFor="let path of info.path; let i = index">
                   <b>Triple {{i+1}} : </b>
                   <span class="text-subj"><a [href]="path.subject" target="_blank">{{getUriStr(path.subject)}}</a></span>&nbsp;
