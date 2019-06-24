@@ -141,14 +141,13 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
   }
 
   getMaxDist(data: CgData) {
-    let maxLen = -1;
+    let maxLen = 1;
     for (const x in this.graphData.pathList) {
       const curLen = this.graphData.pathList[x].path.length;
       if (curLen > maxLen) {
         maxLen = curLen;
       }
     }
-
     return maxLen * this.minXDist;
   }
   getDefaultPath(triple: CgTriple) {
