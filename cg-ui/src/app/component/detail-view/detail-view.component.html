@@ -21,6 +21,9 @@
                 </span>
         </div>
       </mat-expansion-panel>
+      <div *ngIf="infoArr.length == 0">
+        <span class="notice-text">No paths found!</span>
+      </div>
     </div>
   </div>
   <div fxLayoutAlign="center center">
