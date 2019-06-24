@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import {EventProviderService} from '../../service/event/event-provider.service';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {RestService} from '../../service/rest/rest.service';
+import {CgTriple} from '../../model/cg-triple';
+import {GraphViewComponent} from '../graph-view/graph-view.component';
+import {MatSelectChange} from '@angular/material';
 
 @Component({
   selector: 'app-user-form',
@@ -17,11 +20,21 @@ export class UserFormComponent implements OnInit {
 
   public showBar = false;
 
+  public exampleArr: CgTriple[];
+
 
   constructor(public eventService: EventProviderService, public restService: RestService, fb: FormBuilder) {
-    this.subjectFc = new FormControl('http://dbpedia.org/resource/Barack_Obama', Validators.required);
-    this.propertyFc = new FormControl('http://dbpedia.org/ontology/nationality', Validators.required);
-    this.objectFc = new FormControl('http://dbpedia.org/resource/United_States', Validators.required);
+    this.exampleArr = [];
+    let exObj: CgTriple = new CgTriple('http://dbpedia.org/resource/Barack_Obama',
+      'http://dbpedia.org/ontology/nationality', 'http://dbpedia.org/resource/United_States');
+    this.exampleArr.push(exObj);
+    exObj = new CgTriple('http://dbpedia.org/resource/Berkshire_Hathaway',
+      'http://dbpedia.org/ontology/keyPerson', 'http://dbpedia.org/resource/Warren_Buffett');
+    this.exampleArr.push(exObj);
+
+    this.subjectFc = new FormControl(this.exampleArr[0].subject, Validators.required);
+    this.propertyFc = new FormControl(this.exampleArr[0].property, Validators.required);
+    this.objectFc = new FormControl(this.exampleArr[0].object, Validators.required);
     this.verbalizeFc =  new FormControl(false);
     this.complexForm = fb.group({
       'subject' : this.subjectFc,
@@ -44,10 +57,20 @@ export class UserFormComponent implements OnInit {
 
   submitForm(value: any): void {
     this.restService.getRequest('validate', value).subscribe((jsonVal) => {
-      console.log(jsonVal);
       this.eventService.updateDataEvent.emit(jsonVal);
       this.eventService.viewChangeEvent.emit( true );
     });
+  }
+
+  getUriStr(uri: string) {
+    return GraphViewComponent.getUriName(uri);
+  }
+
+  selectChange(event: MatSelectChange) {
+    const curSel: CgTriple = this.exampleArr[event.value];
+    this.subjectFc.setValue(curSel.subject);
+    this.propertyFc.setValue(curSel.property);
+    this.objectFc.setValue(curSel.object);
   }
 
 }

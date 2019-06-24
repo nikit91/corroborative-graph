@@ -42,7 +42,13 @@ export class GraphViewComponent implements OnInit, AfterViewInit {
   static getUriName(uri: string) {
     const myRegexp = /\/([^\/]+)$/g;
     const match = myRegexp.exec(uri);
-    return match[1];
+    let prefix = '';
+    if (uri.match(/dbpedia\.org\/ontology/g)) {
+      prefix = 'dbo:';
+    } else if (uri.match(/dbpedia\.org\/resource/g)) {
+      prefix = 'dbr:';
+    }
+    return prefix + match[1];
   }
 
   constructor(public uip: UniqueIdProviderService, public evntService: EventProviderService) {

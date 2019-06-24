@@ -9,7 +9,7 @@ import {
   MatCheckboxModule, MatExpansionModule,
   MatFormFieldModule,
   MatIconModule,
-  MatInputModule, MatListModule, MatProgressBarModule, MatProgressSpinnerModule,
+  MatInputModule, MatListModule, MatProgressBarModule, MatProgressSpinnerModule, MatSelectModule,
   MatTooltipModule
 } from '@angular/material';
 import {FlexLayoutModule} from '@angular/flex-layout';
@@ -43,7 +43,8 @@ import {HttpClientModule} from '@angular/common/http';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]
