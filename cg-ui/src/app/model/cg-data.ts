@@ -5,4 +5,5 @@ export class CgData {
   pathList: CgPath[];
   graphScore: number;
   inputTriple: CgTriple;
+  finalJudgement?: boolean;
 }

@@ -1,5 +1,9 @@
 <div fxLayout="column" fxLayoutGap="10px">
-  <div class="list-container" fxLayout="column" fxFlex="initial" #detListContainer>
+  <div id="JResultContainer" class="notice-text">
+    COPAAL Confidence Score: <span style="font-weight: bolder;">{{graphData.graphScore | number:'0.6-6'}}</span>,
+    Judgement: <span [ngClass]="factValid?'fact-valid':'fact-invalid'">{{graphData.finalJudgement}}</span>
+  </div>
+  <div class="list-container" fxLayout="column" fxFlex="initial" id="detListContainer" #detListContainer>
 
     <div fxLayout="column" fxLayoutGap="10px" style="margin: 10px">
       <mat-expansion-panel *ngFor="let info of infoArr" (click)="detailCardClick(info.id)" (mouseover)="setItemHov(info.id, true)" (mouseleave)="setItemHov(info.id, false)"

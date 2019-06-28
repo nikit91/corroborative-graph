@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   MatButtonModule,
   MatCardModule,
-  MatCheckboxModule, MatExpansionModule,
+  MatCheckboxModule, MatDialogModule, MatExpansionModule,
   MatFormFieldModule,
   MatIconModule,
   MatInputModule, MatListModule, MatProgressBarModule, MatProgressSpinnerModule, MatSelectModule,
@@ -18,6 +18,8 @@ import { DetailViewComponent } from './component/detail-view/detail-view.compone
 import { ResultViewComponent } from './component/result-view/result-view.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
+import { HelpDescComponent } from './component/help-desc/help-desc.component';
+import { GraphDescComponent } from './component/graph-desc/graph-desc.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import {HttpClientModule} from '@angular/common/http';
     GraphViewComponent,
     UserFormComponent,
     DetailViewComponent,
-    ResultViewComponent
+    ResultViewComponent,
+    HelpDescComponent,
+    GraphDescComponent
   ],
   imports: [
     MatButtonModule,
@@ -44,9 +48,11 @@ import {HttpClientModule} from '@angular/common/http';
     ReactiveFormsModule,
     HttpClientModule,
     MatProgressBarModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDialogModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [HelpDescComponent, GraphDescComponent]
 })
 export class AppModule { }

@@ -1,7 +1,7 @@
 .notice-text {
   font-size: 14px;
   color: darkgrey;
-  font-weight: bold;
+  font-weight: 400;
 }
 
 .card-highlight {
@@ -22,4 +22,12 @@
 
 .text-obj {
   color: #29aeff;
+}
+
+.fact-valid {
+  color: green;
+}
+
+.fact-invalid {
+  color: red;
 }

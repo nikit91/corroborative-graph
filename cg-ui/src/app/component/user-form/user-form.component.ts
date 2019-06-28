@@ -4,7 +4,8 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {RestService} from '../../service/rest/rest.service';
 import {CgTriple} from '../../model/cg-triple';
 import {GraphViewComponent} from '../graph-view/graph-view.component';
-import {MatSelectChange} from '@angular/material';
+import {MatDialog, MatSelectChange} from '@angular/material';
+import {HelpDescComponent} from '../help-desc/help-desc.component';
 
 @Component({
   selector: 'app-user-form',
@@ -23,7 +24,7 @@ export class UserFormComponent implements OnInit {
   public exampleArr: CgTriple[];
 
 
-  constructor(public eventService: EventProviderService, public restService: RestService, fb: FormBuilder) {
+  constructor(public eventService: EventProviderService, public restService: RestService, fb: FormBuilder, public dialog: MatDialog) {
     this.exampleArr = [];
     let exObj: CgTriple = new CgTriple('http://dbpedia.org/resource/Barack_Obama',
       'http://dbpedia.org/ontology/nationality', 'http://dbpedia.org/resource/United_States');
@@ -71,6 +72,10 @@ export class UserFormComponent implements OnInit {
     this.subjectFc.setValue(curSel.subject);
     this.propertyFc.setValue(curSel.property);
     this.objectFc.setValue(curSel.object);
+  }
+
+  openHelpPopup() {
+    this.dialog.open(HelpDescComponent);
   }
 
 }

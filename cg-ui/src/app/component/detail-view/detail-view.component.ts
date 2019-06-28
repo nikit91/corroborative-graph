@@ -1,8 +1,9 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {EventProviderService} from '../../service/event/event-provider.service';
 import {CgPath} from '../../model/cg-path';
 import {CgTriple} from '../../model/cg-triple';
 import {GraphViewComponent} from '../graph-view/graph-view.component';
+import {CgData} from '../../model/cg-data';
 
 @Component({
   selector: 'app-detail-view',
@@ -10,12 +11,16 @@ import {GraphViewComponent} from '../graph-view/graph-view.component';
   styleUrls: ['./detail-view.component.css']
 })
 export class DetailViewComponent implements OnInit {
+  @Input()
+  graphData: CgData;
   @ViewChild('detListContainer', {static: false})
   private detListContainer: ElementRef;
+  public factValid = false;
   statMap = {};
   infoArr: CgPath[] = [];
   constructor(public evntService: EventProviderService) {
     evntService.sendDetailEvent.subscribe((infoArr: CgPath[]) => {
+      this.factValid = this.graphData.finalJudgement;
       setTimeout(() => {this.infoArr = Object.assign([], infoArr);
       this.infoArr.sort(this.pathScoreSorter);
       this.setAllItemHovDef();
@@ -74,8 +79,11 @@ export class DetailViewComponent implements OnInit {
       return;
     }
     const elem = document.getElementById('detcard-' + id);
+    const resElem = document.getElementById('JResultContainer');
+    // offset from parent element
     const offsetTop = elem.offsetTop;
-    this.detListContainer.nativeElement.scrollTop = offsetTop - elem.offsetHeight;
+    // element height and height of sibling element before and 10 for fxLayoutGap
+    this.detListContainer.nativeElement.scrollTop = offsetTop - elem.offsetHeight - resElem.clientHeight - 10;
     this.setAllItemHovDef();
     this.setItemHov(id, true);
   }

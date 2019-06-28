@@ -70,7 +70,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .list-container {
   border: solid #eaeaea;
   overflow-y: auto;
-  height: 85vh;
+  height: 82vh;
 }
 
 .alert-danger {
